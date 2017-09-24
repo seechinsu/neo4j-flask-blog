@@ -1,6 +1,9 @@
 <!doctype html>
 <title>My Blogging Site</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  <!--<link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">-->
+  <!--<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-grid.css">-->
+  <!--<link rel="stylesheet" type="text/css" href="/static/css/bootstrap-reboot.css">-->
+  <link rel="stylesheet" type="text/css" href="/static/style.css">
 <div class="page">
   <h1>My Blogging Site</h1>
   <div class="metanav">
@@ -19,5 +22,9 @@
   {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
   {% endfor %}
-  {% block body %}{% endblock %}
+  {% block body %}
+  {% endblock %}
+  <!--<script src="/static/js/bootstrap.min.js"></script>-->
+  <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>-->
+  <!--<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>-->
 </div>

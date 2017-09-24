@@ -1,12 +1,12 @@
 from flask import Flask, request, session, redirect, url_for, render_template, flash
-from .models import User
+from .models import User, today_recent_posts
 
 app = Flask(__name__)
 
-
 @app.route("/")
 def index():
-    return render_template("index.html")
+    posts = today_recent_posts(5)
+    return render_template("index.html", posts=posts)
 
 
 @app.route("/register", methods=["GET", "POST"])

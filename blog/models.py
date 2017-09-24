@@ -28,7 +28,7 @@ class User:
 
         if not user:
             return False
-        # return bcrypt.verify(password, user["password"])
+            # return bcrypt.verify(password, user["password"])
         return password == user["password"]
 
     def add_post(self, title, tags, text):
@@ -39,7 +39,7 @@ class User:
             id=str(uuid.uuid4()),
             title=title,
             text=text,
-            timestamp=datetime.now().strftime("%X"),
+            timestamp=int(datetime.now().strftime("%H%M%S")),
             date=datetime.now().strftime("%x")
         )
 
@@ -53,3 +53,16 @@ class User:
             t = Node("Tag", name=tag)
             rel = Relationship(t, "TAGGED", post)
             graph.merge(rel)
+
+
+def today_recent_posts(n):
+    today = datetime.now().strftime("%x")
+
+    query = """
+    MATCH (user:User)-[:PUBLISHED]->(post:POST)<-[:TAGGED]-(tag:Tag) 
+    WHERE post.date ={today}
+    RETURN user.username as username, post, COLLECT(tag.name) AS tags
+    ORDER BY post.timestamp DESC LIMIT {n}
+    """
+
+    return graph.run(query,today=today, n=n).data()
