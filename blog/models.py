@@ -54,6 +54,12 @@ class User:
             rel = Relationship(t, "TAGGED", post)
             graph.merge(rel)
 
+    def like_post(self, post_id):
+        user = self.find()
+        post = graph.find_one("POST", "id", post_id)
+        rel = Relationship(user, "LIKES", post)
+        graph.merge(rel)
+
 
 def today_recent_posts(n):
     today = datetime.now().strftime("%x")
