@@ -40,7 +40,8 @@ class User:
             title=title,
             text=text,
             timestamp=int(datetime.now().strftime("%H%M%S")),
-            date=datetime.now().strftime("%x")
+            date=int(datetime.now().strftime("%Y%m%d")),
+            display_date=datetime.now().strftime("%x")
         )
 
         rel = Relationship(user, "PUBLISHED", post)
@@ -70,9 +71,20 @@ class User:
 
         return graph.run(query,username=self.username,n=n).data()
 
+    def similar_users(self,n):
+        query = """
+        MATCH (user1:User)-[:PUBLISHED]->(:POST)<-[:TAGGED]-(tag:Tag),
+              (user2:User)-[:PUBLISHED]->(:POST)<-[:TAGGED]-(tag)
+        WHERE user1.username = {username} AND user1 <> user2
+        WITH user2, COLLECT(DISTINCT tag.name) AS tags, COUNT(DISTINCT tag.name) AS tag_count
+        ORDER BY tag_count DESC LIMIT {n}
+        RETURN user2.username AS similar_user, tags
+        """
+
+        return graph.run(query,username=self.username, n=n).data()
 
 def today_recent_posts(n):
-    today = datetime.now().strftime("%x")
+    today = datetime.now().strftime("%Y%m%d")
 
     query = """
     MATCH (user:User)-[:PUBLISHED]->(post:POST)<-[:TAGGED]-(tag:Tag) 

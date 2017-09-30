@@ -5,7 +5,7 @@
         {% if request.path == "/" %}
     	by <a href="{{ url_for('profile', username=row.username) }}">{{ row.username }}</a>
         {% endif %}
-    	on {{ row.post.date }}
+    	on {{ row.post.display_date }}
     	<a href="{{ url_for('like_post', post_id=row.post.id) }}">like</a><br>
     	<i>{{ ", ".join(row.tags) }}</i><br>
     	{{ row.post.text }}
