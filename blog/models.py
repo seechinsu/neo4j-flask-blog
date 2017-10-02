@@ -94,7 +94,11 @@ class User:
         # find_one was used so the merge below will not create new posts when creating the relationship
         graph.merge(rel)
 
+    # returns n number of recent posts as a list of dictionaries with post name and tags for post
     def recent_posts(self,n):
+
+        # query returns post node and tags that are common
+        # need to refactor the query using the OGM in py2neo v3
         query = """
         MATCH (user:User)-[:PUBLISHED]->(post:POST)<-[:TAGGED]-(tag:Tag)
         WHERE user.username = {username}
@@ -104,7 +108,11 @@ class User:
 
         return graph.run(query,username=self.username,n=n).data()
 
+    # returns n users that have published posts with the same tags
     def similar_users(self,n):
+
+        # query returns user node and the tags that are common between user1 and user2
+        # need to refactor the query using the OGM in py2neo v3
         query = """
         MATCH (user1:User)-[:PUBLISHED]->(:POST)<-[:TAGGED]-(tag:Tag),
               (user2:User)-[:PUBLISHED]->(:POST)<-[:TAGGED]-(tag)
@@ -116,6 +124,7 @@ class User:
 
         return graph.run(query,username=self.username, n=n).data()
 
+    # returns n users that have liked posts with the same tags
     def commonality_of_user(self, user):
         query1 = """
         MATCH (user1:User)-[:PUBLISHED]->(post:POST)<-[:LIKES]-(user2:User)
@@ -123,17 +132,18 @@ class User:
         RETURN COUNT(post) AS likes
         """
 
-        likes = graph.run(query1, username1=self.username, username2=user.username).data()
+        likes = graph.run(query1, username1=self.username, username2=user.username).evaluate()
         likes = 0 if not likes else likes
 
         query2 = """
-        MATCH (user1:User)-[:PUBLISHED]->(post:POST)<-[:TAGGED]-(tag:Tag),
-              (user2:User)-[:PUBLISHED]->(post:POST)<-[:TAGGED]-(tag)
+        MATCH (user1:User)-[:PUBLISHED]->(:POST)<-[:TAGGED]-(tag:Tag),
+              (user2:User)-[:PUBLISHED]->(:POST)<-[:TAGGED]-(tag)
         WHERE user1.username = {username1} AND user2.username = {username2}
-        RETURN COLLECT(DISTINCT tag.name) AS tags
+        WITH COLLECT(DISTINCT tag.name) AS tags
+        RETURN tags
         """
 
-        tags = graph.run(query2, username1=self.username, username2=user.username).data()[0]["tags"]
+        tags = graph.run(query2, username1=self.username, username2=user.username).evaluate()
 
         return {"likes": likes, "tags": tags}
 
