@@ -1,4 +1,5 @@
 from py2neo import Graph, Node, Relationship, authenticate
+from py2neo.ext.calendar import GregorianCalendar
 from passlib.hash import bcrypt
 from datetime import datetime
 import uuid
@@ -8,6 +9,7 @@ authenticate("localhost:7474", "neo4j", "sechien")
 
 # initiates graph object
 graph = Graph()
+calendar = GregorianCalendar(graph)
 
 # creates a user class
 class User:
@@ -94,7 +96,7 @@ class User:
         # find_one was used so the merge below will not create new posts when creating the relationship
         graph.merge(rel)
 
-    # returns n number of recent posts as a list of dictionaries with post name and tags for post
+    # returns n number of recent posts by the user as a list of dictionaries with post name and tags for post
     def recent_posts(self,n):
 
         # query returns post node and tags that are common
@@ -149,7 +151,7 @@ class User:
 
 
 def today_recent_posts(n):
-    today = datetime.now().strftime("%Y%m%d")
+    today = int(datetime.now().strftime("%Y%m%d"))
 
     query = """
     MATCH (user:User)-[:PUBLISHED]->(post:POST)<-[:TAGGED]-(tag:Tag) 
