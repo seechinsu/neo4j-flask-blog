@@ -44,6 +44,7 @@ class User:
     # creates a post with title, tags, and text and relates it to the user
     def add_post(self, title, tags, text):
         user = self.find()
+        today = datetime.now()
 
         # established the properties of the post node
         post = Node(
@@ -51,9 +52,9 @@ class User:
             id=str(uuid.uuid4()),
             title=title,
             text=text,
-            timestamp=int(datetime.now().strftime("%H%M%S")),
-            date=int(datetime.now().strftime("%Y%m%d")),
-            display_date=datetime.now().strftime("%x")
+            timestamp=int(today.strftime("%H%M%S")),
+            date=int(today.strftime("%Y%m%d")),
+            display_date=today.strftime("%x")
         )
 
         # creates a relationship to link user to their published posts
@@ -62,6 +63,9 @@ class User:
         # creates a post node and relates the node to the user who published it
         # if a node does not exist when creating a relationship neo4j will create it automatically
         graph.create(rel)
+
+        today_node = calendar.date(today.year, today.month, today.day).day
+        graph.create(Relationship(post, "ON", today_node))
 
         # creates a list of tags entered by the user using comma as delimiter
         tags = [x.strip() for x in tags.lower().split(",")]
