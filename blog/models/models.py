@@ -1,15 +1,17 @@
-from py2neo import Graph, Node, Relationship, authenticate
-from py2neo.ext.calendar import GregorianCalendar
-from passlib.hash import bcrypt
+# from py2neo import Graph, Node, Relationship, authenticate
+# from py2neo.ext.calendar import GregorianCalendar
+# from passlib.hash import bcrypt
 from datetime import datetime
 import uuid
+#
+# # authenticates into neo4j db using username and passsword
+# authenticate("localhost:7474", "neo4j", "sechien")
+#
+# # initiates graph object
+# graph = Graph()
+# calendar = GregorianCalendar(graph)
 
-# authenticates into neo4j db using username and passsword
-authenticate("localhost:7474", "neo4j", "sechien")
-
-# initiates graph object
-graph = Graph()
-calendar = GregorianCalendar(graph)
+from db import graph, Node, Relationship, calendar
 
 # creates a user class
 class User:
