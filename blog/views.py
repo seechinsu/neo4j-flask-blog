@@ -3,6 +3,7 @@ from .models.models import User, today_recent_posts
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
     posts = today_recent_posts(5)
@@ -15,7 +16,8 @@ def register():
         username = request.form["username"]
         password = request.form["password"]
 
-        user = User(username)
+        user = User()
+        user.username = username
 
         if not user.register(password):
             flash("A user with that username already exists.")
@@ -32,7 +34,8 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
 
-        user = User(username)
+        user = User()
+        user.username = username
 
         if not user.verify_password(password):
             flash("Invalid login.")
@@ -53,12 +56,13 @@ def add_post():
         tags = request.form["tags"]
         text = request.form["text"]
 
-        user = User(session["username"])
+        user = User()
+        user.username = session["username"]
 
         if not title or not tags or not text:
             flash("You must give your post a title, tags, and a text body.")
         else:
-            user.add_post(title,tags,text)
+            user.add_post(title, tags, text)
 
     return redirect(url_for("index"))
 
@@ -70,7 +74,8 @@ def like_post(post_id):
         flash("You must be logged in to like a post.")
         return redirect(url_for("login"))
 
-    user = User(username)
+    user = User()
+    user.username = username
     user.like_post(post_id)
     flash("Liked post.")
     return redirect(request.referrer)
@@ -78,8 +83,10 @@ def like_post(post_id):
 
 @app.route("/profile/<username>")
 def profile(username):
-    user1 = User(session.get("username"))
-    user2 = User(username)
+    user1 = User()
+    user1.username = session.get("username")
+    user2 = User()
+    user2.username = username
     posts = user2.recent_posts(5)
 
     similar = []
