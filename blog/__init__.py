@@ -1,5 +1,5 @@
 from .views import app
-from .models.models import graph
+from .models.user import graph
 
 graph.run("CREATE CONSTRAINT ON (n:User) ASSERT n.username IS UNIQUE")
 graph.run("CREATE CONSTRAINT ON (n:Post) ASSERT n.id IS UNIQUE")
